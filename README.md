@@ -45,7 +45,7 @@ This script can change the database password to match the one you've set for `HL
 - Log into your CRCON host machine using SSH and enter these commands (one line at at time) :
 ```shell
 cd /root/hll_rcon_tool
-wget
+wget https://raw.githubusercontent.com/ElGuillermo/HLL_CRCON_login_rescue/refs/heads/main/login_rescue.sh
 ```
 
 ## Config
