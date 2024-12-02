@@ -13,7 +13,7 @@ What it does :
 - You lost your CRCON user password ?  
 - Nobody else can log into the admin panel to change it or create a new user ?
 
-This script can create a "rescue" superuser.  
+This script can create a "rescue" superuser from the CRCON host terminal.  
 You will be able to login to the admin panel, then reset your usual user password or create a new user account.  
 
 Credentials :  
