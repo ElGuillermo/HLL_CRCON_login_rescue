@@ -16,8 +16,8 @@ What it does :
 This script can create a "rescue" superuser.  
 You will be able to login to the admin panel, then reset your usual user password or create a new user account.  
 
-Credentials :
-- user : 'rescue'
+Credentials :  
+- user : 'rescue'  
 - password : 'helpmeplease'
 
 ### :warning: Security notice
