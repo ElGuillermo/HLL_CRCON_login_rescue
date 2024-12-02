@@ -175,7 +175,6 @@ if [ $change_db_pwd = "yes" ]; then
           docker compose up -d postgres
           printf "Setting new database password\n"
           docker compose exec -it postgres psql -U rcon -c "ALTER USER rcon WITH PASSWORD '$new_db_pwd';"
-          printf "Here live dragons\n"
           printf "Stopping postgres Docker container\n"
           docker compose down
           db_pwd_updated="yes"
