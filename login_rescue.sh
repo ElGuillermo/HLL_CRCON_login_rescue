@@ -12,11 +12,6 @@
 # default : "/root/hll_rcon_tool"
 CRCON_folder_path=""
 
-# Set to "yes" if you have modified any file that comes from CRCON repository
-# First build will take ~3-4 minutes. Subsequent ones will take ~20 seconds.
-# Default : "yes"
-rebuild_before_restart="yes"
-
 # Create a "rescue" CRCON superuser
 # Its default password will be "helpmeplease"
 # Don't forget to disable/delete this user after your maintenance operation !
@@ -34,22 +29,45 @@ new_db_pwd=""  # Could be any non-blank string without a space or a % sign
 is_CRCON_configured() {
   printf "%s└ \033[34m?\033[0m Testing folder : \033[33m%s\033[0m\n" "$2" "$1"
   if [ -f "$1/compose.yaml" ] && [ -f "$1/.env" ]; then
-    printf "%s  └ \033[32mV\033[0m A valid CRCON install has been found in \033[33m%s\033[0m\n" "$2" "$1"
+    printf "%s  └ \033[32mV\033[0m A configured CRCON install has been found in \033[33m%s\033[0m\n" "$2" "$1"
   else
+    missing_env=0
+    missing_compose=0
+    wrong_compose_name=0
+    deprecated_compose=0
     if [ ! -f "$1/.env" ]; then
+      missing_env=1
       printf "%s  └ \033[31mX\033[0m Missing file : '\033[37m.env\033[0m'\n" "$2"
-      printf "\n\033[32mWhat to do\033[0m :\nFollow the install procedure to create a '\033[37m.env\033[0m' file\n\n"
     fi
     if [ ! -f "$1/compose.yaml" ]; then
+      missing_compose=1
       printf "%s  └ \033[31mX\033[0m Missing file : '\033[37mcompose.yaml\033[0m'\n" "$2"
       if [ -f "$1/compose.yml" ]; then
-        printf "%s  └ \033[31m!\033[0m Deprecated file found : '\033[37mcompose.yml\033[0m'\n" "$2"
+        wrong_compose_name=1
+        printf "%s    └ \033[31m!\033[0m Wrongly named file found : '\033[37mcompose.yml\033[0m'\n" "$2"
       fi
       if [ -f "$1/docker-compose.yml" ]; then
-        printf "%s  └ \033[31m!\033[0m Deprecated file found : '\033[37mdocker-compose.yml\033[0m'\n" "$2"
+        deprecated_compose=1
+        printf "%s    └ \033[31m!\033[0m Deprecated file found : '\033[37mdocker-compose.yml\033[0m'\n" "$2"
       fi
-      printf "\n\033[32mWhat to do\033[0m :\nFollow the install procedure to create a '\033[37mcompose.yaml\033[0m' file\n\n"
     fi
+    printf "\n\033[32mWhat to do\033[0m :\n"
+    if [ $missing_env = 1 ]; then
+      printf "\n - Follow the install procedure to create a '\033[37m.env\033[0m' file\n"
+    fi
+    if [ $missing_compose = 1 ]; then
+      printf "\n - Follow the install procedure to create a '\033[37mcompose.yaml\033[0m' file\n"
+      if [ $wrong_compose_name = 1 ]; then
+        printf "\n   If your CRCON starts normally using '\033[37mcompose.yml\033[0m'\n"
+        printf "   you should rename this file using this command :\n"
+        printf "   \033[36mmv %s/compose.yml %s/compose.yaml\033[0m\n" "$1" "$1"
+      fi
+      if [ $deprecated_compose = 1 ]; then
+        printf "\n   '\033[37mdocker-compose.yml\033[0m' was used by the deprecated (jul. 2023) 'docker-compose' command\n"
+        printf "   You should delete it and use a '\033[37mcompose.yaml\033[0m' file\n"
+      fi
+    fi
+    printf "\n"
     exit
   fi
 }
@@ -68,7 +86,6 @@ if [ "$(id -u)" -ne 0 ]; then
   printf "\033[32mWhat to do\033[0m : you must elevate your permissions using 'sudo' :\n"
   printf "\033[36msudo sh ./%s\033[0m\n\n" "$this_script_name"
   exit
-# Root
 else
   printf "\033[32mV\033[0m You have 'root' permissions.\n"
 fi
@@ -127,15 +144,6 @@ fi
 
 printf "\033[32mV Everything's fine\033[0m Let's renew these passwords !\n\n"
 
-if [ $rebuild_before_restart = "yes" ]; then
-  echo "┌──────────────────────────────────────┐"
-  echo "│ Build CRCON                          │"
-  echo "└──────────────────────────────────────┘"
-  docker compose build
-  echo "└──────────────────────────────────────┘"
-  printf "Build CRCON : \033[32mdone\033[0m.\n\n"
-fi
-
 echo "┌──────────────────────────────────────┐"
 echo "│ Stop CRCON                           │"
 echo "└──────────────────────────────────────┘"
@@ -178,12 +186,8 @@ if [ $change_db_pwd = "yes" ]; then
             db_pwd_updated="no"
             ;;
           *)
-          printf "Starting postgres Docker container\n"
           docker compose up -d postgres
-          printf "Setting new database password\n"
           docker compose exec -it postgres psql -U rcon -c "ALTER USER rcon WITH PASSWORD '$new_db_pwd';"
-          printf "Here live dragons\n"
-          printf "Stopping postgres Docker container\n"
           docker compose down
           db_pwd_updated="yes"
         esac
@@ -222,8 +226,7 @@ if [ "$change_db_pwd" = "yes" ]; then
   else
     printf "\033[31mX\033[0m Database password wasn't updated.\n"
     printf "\033[31mX\033[0m The new password you've set in configuration may be blank,\n"
-    printf "  or there is an illegal \033[31m%%\033[0m character or \033[31mspace\033[0m in it.\n"
-    printf "\033[31mX\033[0m Database password wasn't updated.\n\n"
+    printf "  or there is an illegal \033[31m%%\033[0m character or \033[31mspace\033[0m in it.\n\n"
   fi
 fi
 printf "Wait for a full minute before using CRCON's interface.\n\n"
