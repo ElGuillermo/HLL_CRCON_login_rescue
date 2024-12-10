@@ -2,7 +2,6 @@
 Stand alone tool to create a rescue access to an Hell Let Loose (HLL) CRCON (see : https://github.com/MarechJ/hll_rcon_tool) install.
 
 What it does :  
-- `(optional)` rebuild CRCON  
 - stop CRCON  
 - `(optional)` create a "rescue" CRCON superuser  
 - `(optional)` change the CRCON database password  
