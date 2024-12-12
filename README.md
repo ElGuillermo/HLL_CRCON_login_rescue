@@ -20,7 +20,7 @@ Credentials :
 - password : 'helpmeplease'
 
 ### :warning: Security notice
-- Please make sure to delete/disable the "rescue" user once you're done with your maintenance operations.
+Please make sure to delete/disable the "rescue" user once you're done with your maintenance operations.
 
 ## CRCON Database password updater
 
