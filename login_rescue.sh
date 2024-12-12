@@ -292,20 +292,20 @@ else
 fi
 if [ "$create_superuser" = "yes" ]; then
     if [ "$rescue_user_created" = "yes" ]; then
-        printf "\033[32mV\033[0m A '\033[33mrescue\033[0m' CRCON user has been created.\n"
+        printf "\033[32mV\033[0m '\033[33mrescue\033[0m' CRCON user has been created.\n"
         printf "  Its password is '\033[33mhelpmeplease\033[0m'\n\n"
         printf "  \033[41;37m Security notice \033[0m\n"
         printf "  Please make sure you delete/disable this '\033[33mrescue\033[0m' user\n"
         printf "  once you're done with your maintenance operations.\n\n"
     else
-        printf "\033[31mX\033[0m '\033[33mrescue\033[0m' CRCON user couldn't be created.\n\n"
+        printf "\033[31mX\033[0m '\033[33mrescue\033[0m' CRCON user couldn't be created\n\n"
     fi
     if [ "$change_db_pwd" = "yes" ]; then
         if [ "$db_pwd_updated" = "yes" ]; then
-            printf "\033[32mV\033[0m The CRCON PostgreSQL database password has been updated.\n"
+            printf "\033[32mV\033[0m CRCON PostgreSQL database password has been updated\n"
             printf "  It's now set as '\033[33m%s\033[0m'\n" "$new_db_pwd"
             printf "  It must match the \033[33mHLL_DB_PASSWORD=\033[0m value set in your .env file\n\n"
         else
-        printf "\033[31mX\033[0m Database password wasn't updated.\n\n"
+        printf "\033[31mX\033[0m CRCON PostgreSQL database password wasn't updated\n\n"
     fi
 fi
